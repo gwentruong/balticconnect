@@ -1,4 +1,6 @@
 var map;
+var PLayer;
+var NLayer;
 
 function onEachFeature(feature, layer) {
     if (feature.properties && feature.properties.Name) {
@@ -13,15 +15,21 @@ function onEachFeature(feature, layer) {
     }
 }
 
+function handleFeature(feature, layer) {
+    layer.bindPopup('<strong>'+ feature.properties.name +
+                    '</strong><br/>'+ feature.properties.country
+                    +'<br/>' + feature.properties.helcomId)
+}
+
 function main() {
     var oceanMap = L.tileLayer.provider('CartoDB.Positron');
     var imageryMap = L.tileLayer.provider('Esri.WorldImagery');
 
     // Load basemap with 2 styles
     var map = L.map('map', {
-        center: [60.359708, 22.021643],
+        center: [60.295895, 21.903840],
         zoom: 9,
-        minZoom: 7,
+        minZoom: 8,
         maxZoom: 11,
         layers: [oceanMap]
     });
@@ -80,19 +88,99 @@ function main() {
       toggle.addTo(map);
     });
 
+    // Add nutrient vector layers
+    map.createPane("Total phosphorus");
+    map.createPane("Total nitrogen");
+
+    $.getJSON('./layers/nutrient_2018.geojson', function(vectorData) {
+        PLayer = L.geoJson(vectorData, {
+            style: function(feature) {
+                var fillColor;
+                var status = feature.properties.phosphorus;
+                if (status == 'Fail') fillColor = "#e6ac25";
+                else if (status == 'Achieve') fillColor = "#32bf3e";
+                else fillColor = "#FFFFFFFF";
+                return { color: "#FFFFFFFF", weight: 0, fillColor: fillColor, fillOpacity: .4 };
+            },
+            onEachFeature: handleFeature,
+            pane : "Total phosphorus"
+        });
+
+        var Pbutton = L.easyButton({
+            states: [{
+                stateName: 'add-markers',
+                icon: '&Rho;',
+                title: 'Show total phosphorus',
+                onClick: function(control) {
+                    map.addLayer(PLayer);
+                    control.state('remove-markers');
+                }
+            }, {
+                icon: '&cross;',
+                stateName: 'remove-markers',
+                onClick: function(control) {
+                    map.removeLayer(PLayer);
+                    control.state('add-markers');
+                },
+                title: 'Hide total phosphorus'
+            }]
+        });
+        Pbutton.addTo(map);
+
+        NLayer = L.geoJson(vectorData, {
+            style: function(feature) {
+                var fillColor;
+                var status = feature.properties.nitrogen;
+                if (status == 'Fail') fillColor = "#e6ac25";
+                else if (status == 'Achieve') fillColor = "#32bf3e";
+                else fillColor = "#FFFFFFFF";
+                return { color: "#FFFFFFFF", weight: 0, fillColor: fillColor, fillOpacity: .4 };
+            },
+            onEachFeature: handleFeature,
+            pane : "Total nitrogen"
+        });
+
+        var Nbutton = L.easyButton({
+            states: [{
+                stateName: 'add-markers',
+                icon: '&Nu;',
+                title: 'Show total nitrogen',
+                onClick: function(control) {
+                    map.addLayer(NLayer);
+                    control.state('remove-markers');
+                }
+            }, {
+                icon: '&cross;',
+                stateName: 'remove-markers',
+                onClick: function(control) {
+                    map.removeLayer(NLayer);
+                    control.state('add-markers');
+                },
+                title: 'Hide total nitrogen'
+            }]
+        });
+        Nbutton.addTo(map);
+    });
+
     // Combine overlay layers
     var groupOverLays = {
         "Land development": {
             "Agriculture": agriculture,
-            "Vegetation index (NDVI)": ndvi
+            "Vegetation index (NDVI)": ndvi,
         },
         "Water quality": {
             "Ocean depth (Bathymetric)": bathymetric
         }
     };
 
+    var options = {
+      // Make the "Land development" group exclusive (use radio inputs)
+      exclusiveGroups: ["Land development"]
+    };
+
     // Group basemap and overlay layers
-    L.control.groupedLayers(baseLayers, groupOverLays).addTo(map);
+    var layerControl = L.control.groupedLayers(baseLayers, groupOverLays, options);
+    map.addControl(layerControl);
 
     // Add map scale
     L.control.scale({
