@@ -1,5 +1,4 @@
 var map;
-// var layerControl;
 
 function onEachFeature(feature, layer) {
     if (feature.properties && feature.properties.Name) {
@@ -23,7 +22,7 @@ function main() {
         center: [60.359708, 22.021643],
         zoom: 8,
         minZoom: 6,
-        maxZoom: 12,
+        maxZoom: 11,
         layers: [oceanMap]
     });
 
@@ -56,23 +55,26 @@ function main() {
         onEachFeature: onEachFeature
       });
 
+      // Toogle button to enable/disable activities
       var toggle = L.easyButton({
           states: [{
-            stateName: 'add-markers',
-            icon: '&check;',
-            title: 'Show activities',
-            onClick: function(control) {
-              map.addLayer(activityTurku);
-              control.state('remove-markers');
-            }
+              stateName: 'add-markers',
+              icon: '&check;',
+              title: 'Show activities',
+              onClick: function(control) {
+                  map.setView([60.448861, 22.265566], 11);
+                  map.addLayer(activityTurku);
+                  control.state('remove-markers');
+              }
           }, {
-            icon: '&cross;',
-            stateName: 'remove-markers',
-            onClick: function(control) {
-              map.removeLayer(activityTurku);
-              control.state('add-markers');
-            },
-            title: 'Hide activities'
+              icon: '&cross;',
+              stateName: 'remove-markers',
+              onClick: function(control) {
+                  map.removeLayer(activityTurku);
+                  map.setView([60.359708, 22.021643], 8);
+                  control.state('add-markers');
+              },
+              title: 'Hide activities'
           }]
       });
       toggle.addTo(map);
