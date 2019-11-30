@@ -49,13 +49,35 @@ function main() {
         iconUrl: './img/marker.svg',
         iconSize: [50,40]
       });
-      L.geoJson(data, {
+      var activityTurku = L.geoJson(data, {
         pointToLayer: function(feature,latlng){
     	  return L.marker(latlng,{icon: markerIcon});
         },
         onEachFeature: onEachFeature
-      }).addTo(map);
+      });
+
+      var toggle = L.easyButton({
+          states: [{
+            stateName: 'add-markers',
+            icon: '&check;',
+            title: 'Show activities',
+            onClick: function(control) {
+              map.addLayer(activityTurku);
+              control.state('remove-markers');
+            }
+          }, {
+            icon: '&cross;',
+            stateName: 'remove-markers',
+            onClick: function(control) {
+              map.removeLayer(activityTurku);
+              control.state('add-markers');
+            },
+            title: 'Hide activities'
+          }]
+      });
+      toggle.addTo(map);
     });
+
     // Combine overlay layers
     var groupOverLays = {
         "Land development": {
