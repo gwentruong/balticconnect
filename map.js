@@ -1,35 +1,38 @@
 var map;
-var layerControl;
+// var layerControl;
+
+function onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.Name) {
+        var contentString = '<div id="content">'+
+            '<h2 id="firstHeading" class="firstHeading">' +feature.properties.Name+'</h2>'+
+            '<div id="bodyContent">'+
+            '<p><b>Year</b>: '+feature.properties.Year+'</p>'+
+            '<p><b>Contact</b>: '+feature.properties.Contact+'</p>'+
+            '<p>'+feature.properties.Details+'</p>'+
+            '</div></div>';
+        layer.bindPopup(contentString);
+    }
+}
 
 function main() {
-    var oceanMap = L.tileLayer.provider('Esri.OceanBasemap');
+    var oceanMap = L.tileLayer.provider('CartoDB.Positron');
     var imageryMap = L.tileLayer.provider('Esri.WorldImagery');
 
+    // Load basemap with 2 styles
     var map = L.map('map', {
         center: [60.359708, 22.021643],
         zoom: 8,
         minZoom: 6,
-        maxZoom: 9,
+        maxZoom: 12,
         layers: [oceanMap]
     });
 
-    var options = {
-        maxZoom: 16,
-        tolerance: 3,
-        debug: 0,
-        style: {
-            fillColor: '#1EB300',
-            color: '#F2FF00',
-            opacity: 0.5,
-            weight: 2,
-            fillOpacity:0.5
-        }
-    };
     var baseLayers = {
-        'ERSI Ocean Map': oceanMap,
+        'CartoDB Positron': oceanMap,
         'ERSI Imagery': imageryMap
     };
 
+    // Load WMS layers of Sattelite images hosted from Sentinel Hub
     var option_wms = {
         transparent: true,
         format: 'image/png',
@@ -40,6 +43,20 @@ function main() {
     var ndvi = source.getLayer('NDVI');
     var bathymetric = source.getLayer('BATHYMETRIC');
 
+    // Load geojson of activities points
+    $.getJSON("./layers/Activities_Database_TurkuExample.geojson",function(data){
+        var markerIcon = L.icon({
+        iconUrl: './img/marker.svg',
+        iconSize: [50,40]
+      });
+      L.geoJson(data, {
+        pointToLayer: function(feature,latlng){
+    	  return L.marker(latlng,{icon: markerIcon});
+        },
+        onEachFeature: onEachFeature
+      }).addTo(map);
+    });
+    // Combine overlay layers
     var groupOverLays = {
         "Land development": {
             "Agriculture": agriculture,
@@ -50,8 +67,10 @@ function main() {
         }
     };
 
+    // Group basemap and overlay layers
     L.control.groupedLayers(baseLayers, groupOverLays).addTo(map);
 
+    // Add map scale
     L.control.scale({
         position: 'bottomleft'
     }).addTo(map);
