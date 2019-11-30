@@ -98,6 +98,12 @@ function main() {
     L.control.scale({
         position: 'bottomleft'
     }).addTo(map);
+
+    var credctrl = L.controlCredits({
+        image: "./img/logo.png",
+        link: "http://balticsatapps.eu/weseachallenge/",
+        text: "Baltic Connect Map by Uyen, <u>WeSeachallenge</u>"
+    }).addTo(map);
 }
 
 main();
