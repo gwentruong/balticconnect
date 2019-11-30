@@ -20,8 +20,8 @@ function main() {
     // Load basemap with 2 styles
     var map = L.map('map', {
         center: [60.359708, 22.021643],
-        zoom: 8,
-        minZoom: 6,
+        zoom: 9,
+        minZoom: 7,
         maxZoom: 11,
         layers: [oceanMap]
     });
@@ -43,7 +43,7 @@ function main() {
     var bathymetric = source.getLayer('BATHYMETRIC');
 
     // Load geojson of activities points
-    $.getJSON("./layers/Activities_Database_TurkuExample.geojson",function(data){
+    $.getJSON("./layers/Activities_Database_TurkuExample.geojson", function(data){
         var markerIcon = L.icon({
         iconUrl: './img/marker.svg',
         iconSize: [50,40]
@@ -71,7 +71,7 @@ function main() {
               stateName: 'remove-markers',
               onClick: function(control) {
                   map.removeLayer(activityTurku);
-                  map.setView([60.359708, 22.021643], 8);
+                  map.setView([60.359708, 22.021643], 9);
                   control.state('add-markers');
               },
               title: 'Hide activities'
@@ -102,7 +102,7 @@ function main() {
     var credctrl = L.controlCredits({
         image: "./img/logo.png",
         link: "http://balticsatapps.eu/weseachallenge/",
-        text: "Baltic Connect Map by Uyen, <u>WeSeachallenge</u>"
+        text: "Baltic Connect, participant of <u>WeSeachallenge</u>"
     }).addTo(map);
 }
 
