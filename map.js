@@ -29,7 +29,7 @@ function main() {
     var map = L.map('map', {
         center: [60.295895, 21.903840],
         zoom: 9,
-        minZoom: 8,
+        minZoom: 9,
         maxZoom: 11,
         layers: [oceanMap]
     });
@@ -173,13 +173,9 @@ function main() {
         }
     };
 
-    var options = {
-      // Make the "Land development" group exclusive (use radio inputs)
-      exclusiveGroups: ["Land development"]
-    };
 
     // Group basemap and overlay layers
-    var layerControl = L.control.groupedLayers(baseLayers, groupOverLays, options);
+    var layerControl = L.control.groupedLayers(baseLayers, groupOverLays);
     map.addControl(layerControl);
 
     // Add map scale
