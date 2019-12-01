@@ -1,3 +1,3 @@
-# WESEA BALTIC CHALLENGE
+# BalticConnect
 
-A simple web app to navigate Baltic Sea status
+A simple web app to navigate Baltic Sea status, made with love and spirit from WeSeaChallenge
