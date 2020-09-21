@@ -10,12 +10,28 @@ const App = () => {
 
   const intializeMap = ({ setMap, mapContainer }) => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidXllbnRydW9uZyIsImEiOiJjanVjcGN0b3IwaG5xNDNwZHJ3czRlNmJhIn0.u7o0VUuXY5f-rs4hcrwihA';
+
+    // Initalize map with base style
     const initMap = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/uyentruong/ckfbjtpi45eqp19myy1pon6r3",
       center: [22.253043, 60.451436],
       zoom: 9
     });
+
+    // Add navigation control
+    const nav = new mapboxgl.NavigationControl();
+    initMap.addControl(nav, 'top-right');
+
+    // Full screen control
+    initMap.addControl(new mapboxgl.FullscreenControl());
+
+    // Scale control
+    const scale = new mapboxgl.ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+      });
+    initMap.addControl(scale, 'bottom-right');
 
     initMap.on("load", () => {
       setMap(initMap);
